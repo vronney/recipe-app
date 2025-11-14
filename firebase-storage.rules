@@ -1,0 +1,22 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow anyone to read images (public access)
+    match /{allPaths=**} {
+      allow read: if true;
+    }
+    
+    // Allow uploads to recipes folder with validation
+    match /recipes/{imageId} {
+      allow write: if request.resource.size < 5 * 1024 * 1024  // Max 5MB
+                   && request.resource.contentType.matches('image/.*');  // Only images
+    }
+    
+    // Allow test uploads (for /test-upload page)
+    match /test-uploads/{imageId} {
+      allow write: if request.resource.size < 5 * 1024 * 1024  // Max 5MB
+                   && request.resource.contentType.matches('image/.*');  // Only images
+    }
+  }
+}

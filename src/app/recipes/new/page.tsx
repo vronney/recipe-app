@@ -3,11 +3,16 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
+import { uploadImage, validateImageFile } from "@/lib/storage";
 
 export default function NewRecipe() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -20,17 +25,60 @@ export default function NewRecipe() {
     image: "",
   });
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate the file
+    const validationError = validateImageFile(file);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    setImageFile(file);
+    setError("");
+
+    // Create preview URL
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview("");
+    setFormData({ ...formData, image: "" });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
+      let imageUrl = formData.image;
+
+      // Upload image if a file was selected
+      if (imageFile) {
+        setUploading(true);
+        try {
+          imageUrl = await uploadImage(imageFile, "recipes");
+        } catch (uploadError) {
+          throw new Error("Failed to upload image. Please try again.");
+        } finally {
+          setUploading(false);
+        }
+      }
+
       const response = await fetch("/api/recipes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
+          image: imageUrl,
           ingredients: formData.ingredients.filter((i) => i.trim()),
           instructions: formData.instructions.filter((i) => i.trim()),
         }),
@@ -289,42 +337,89 @@ export default function NewRecipe() {
             </div>
           </div>
 
-          {/* Category and Image */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+          {/* Category */}
+          <div>
+            <label
+              htmlFor="category"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Category
+            </label>
+            <input
+              type="text"
+              id="category"
+              value={formData.category}
+              onChange={(e) =>
+                setFormData({ ...formData, category: e.target.value })
+              }
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+              placeholder="e.g., Dessert, Main Course"
+            />
+          </div>
+
+          {/* Image Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Recipe Image
+            </label>
+            
+            {/* Image Preview */}
+            {imagePreview && (
+              <div className="mb-4 relative">
+                <Image
+                  src={imagePreview}
+                  alt="Recipe preview"
+                  width={400}
+                  height={300}
+                  className="rounded-lg object-cover w-full max-h-64"
+                />
+                <button
+                  type="button"
+                  onClick={removeImage}
+                  className="absolute top-2 right-2 bg-red-600 text-white p-2 rounded-full hover:bg-red-700"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
+            {/* File Input */}
+            <div className="flex flex-col gap-2">
               <label
-                htmlFor="category"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                htmlFor="imageFile"
+                className="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 rounded-lg border-2 border-dashed border-gray-300 text-center transition-colors"
               >
-                Category
+                {imageFile ? imageFile.name : "📁 Choose an image file"}
+                <input
+                  type="file"
+                  id="imageFile"
+                  accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
               </label>
-              <input
-                type="text"
-                id="category"
-                value={formData.category}
-                onChange={(e) =>
-                  setFormData({ ...formData, category: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                placeholder="e.g., Dessert, Main Course"
-              />
+              <p className="text-xs text-gray-500">
+                Supported formats: JPEG, PNG, GIF, WebP (max 5MB)
+              </p>
             </div>
-            <div>
-              <label
-                htmlFor="image"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Image URL
-              </label>
+
+            {/* Or use URL */}
+            <div className="mt-3">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="flex-1 border-t border-gray-300"></div>
+                <span className="text-sm text-gray-500">or use URL</span>
+                <div className="flex-1 border-t border-gray-300"></div>
+              </div>
               <input
                 type="url"
-                id="image"
+                id="imageUrl"
                 value={formData.image}
                 onChange={(e) =>
                   setFormData({ ...formData, image: e.target.value })
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                 placeholder="https://example.com/image.jpg"
+                disabled={!!imageFile}
               />
             </div>
           </div>
@@ -333,10 +428,10 @@ export default function NewRecipe() {
           <div className="flex gap-4 pt-4">
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || uploading}
               className="flex-1 bg-orange-600 hover:bg-orange-700 text-white py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Creating..." : "Create Recipe"}
+              {uploading ? "Uploading Image..." : loading ? "Creating..." : "Create Recipe"}
             </button>
             <Link
               href="/recipes"

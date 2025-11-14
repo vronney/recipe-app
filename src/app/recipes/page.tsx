@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Recipe } from "@/models";
+import { convertGsUrlToHttp } from "@/lib/firebase-utils";
 
 export default function RecipesPage() {
   const router = useRouter();
@@ -80,27 +81,69 @@ export default function RecipesPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">My Recipes</h1>
-          <div className="flex gap-4">
-            <Link
-              href="/recipes/new"
-              className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-            >
-              Add Recipe
-            </Link>
-            <button
-              onClick={handleSignOut}
-              className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors"
-            >
-              Sign Out
-            </button>
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4">
+          {/* Mobile Layout */}
+          <div className="sm:hidden">
+            <div className="flex justify-between items-center mb-3">
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">Admin Dashboard</h1>
+                <p className="text-xs text-gray-600 mt-0.5">Manage your recipes</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <Link
+                href="/"
+                className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-xs font-medium transition-colors text-center"
+              >
+                View Public Site
+              </Link>
+              <Link
+                href="/recipes/new"
+                className="bg-orange-600 hover:bg-orange-700 text-white px-3 py-2 rounded-lg text-xs font-medium transition-colors text-center"
+              >
+                Add Recipe
+              </Link>
+              <button
+                onClick={handleSignOut}
+                className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded-lg text-xs font-medium transition-colors"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+
+          {/* Desktop Layout */}
+          <div className="hidden sm:flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+              <p className="text-sm text-gray-600 mt-1">Manage your recipes</p>
+            </div>
+            <div className="flex gap-4">
+              <Link
+                href="/"
+                className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors"
+              >
+                View Public Site
+              </Link>
+              <Link
+                href="/recipes/new"
+                className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              >
+                Add Recipe
+              </Link>
+              <button
+                onClick={handleSignOut}
+                className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors"
+              >
+                Sign Out
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
         {error && (
           <div className="rounded-md bg-red-50 p-4 mb-6">
             <p className="text-sm text-red-800">{error}</p>
@@ -138,31 +181,36 @@ export default function RecipesPage() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {recipes.map((recipe) => (
               <div
                 key={recipe._id?.toString()}
                 className="bg-white overflow-hidden shadow-lg rounded-lg hover:shadow-xl transition-shadow"
               >
-                {recipe.image && (
-                  <div className="relative h-48 w-full">
-                    <Image
-                      src={recipe.image}
-                      alt={recipe.title}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                  </div>
-                )}
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    {recipe.title}
-                  </h3>
-                  <p className="text-gray-600 mb-4 line-clamp-2">
+                <Link href={`/recipes/${recipe._id?.toString()}`}>
+                  {recipe.image && (
+                    <div className="relative w-full">
+                      <Image
+                        src={convertGsUrlToHttp(recipe.image)}
+                        alt={recipe.title}
+                        width={1200}
+                        height={800}
+                        className="w-full h-auto"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      />
+                    </div>
+                  )}
+                </Link>
+                <div className="p-4 sm:p-6">
+                  <Link href={`/recipes/${recipe._id?.toString()}`}>
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 hover:text-orange-600 transition-colors cursor-pointer">
+                      {recipe.title}
+                    </h3>
+                  </Link>
+                  <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4 line-clamp-2">
                     {recipe.description}
                   </p>
-                  <div className="flex gap-4 text-sm text-gray-500 mb-4">
+                  <div className="flex gap-3 sm:gap-4 text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
                     <span>⏱️ {recipe.prepTime + recipe.cookTime} min</span>
                     <span>🍽️ {recipe.servings} servings</span>
                   </div>
