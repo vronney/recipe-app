@@ -31,26 +31,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50 flex flex-col">
       {/* Hero Section */}
-      <header className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-1 sm:mb-2">
-                🍳 Recipe Collection
-              </h1>
-              <p className="text-sm sm:text-lg text-gray-600 hidden sm:block">
-                Discover and explore delicious recipes
-              </p>
-            </div>
-            <Link
-              href="/auth/signin"
-              className="bg-orange-600 hover:bg-orange-700 text-white px-4 sm:px-6 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base whitespace-nowrap"
-            >
-              Admin
-            </Link>
-          </div>
-        </div>
-      </header>
+
 
       {/* Recipes Grid */}
       <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 flex-grow">

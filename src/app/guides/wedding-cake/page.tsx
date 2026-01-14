@@ -156,7 +156,7 @@ export default function WeddingCakeGuide() {
 
       <header>
         <h1>Autumn 3-Tier Wedding Cake Guide</h1>
-        <div className="print-btn" style={{textAlign: 'center', marginBottom: '1em'}}>
+        <div className="print-btn" style={{ textAlign: 'center', marginBottom: '1em' }}>
           <button
             onClick={() => window.print()}
             style={{
@@ -193,16 +193,16 @@ export default function WeddingCakeGuide() {
             <h2>Overview</h2>
             <figure>
               <Image
-                src="/images/fall-wedding-cake.jpg"
+                src="/images/fall-wedding-cake.png"
                 alt="Three-tier fall-themed wedding cake with autumn flowers"
                 width={800}
                 height={600}
-                style={{maxWidth: '100%', height: 'auto', borderRadius: '4px'}}
+                style={{ maxWidth: '100%', height: 'auto', borderRadius: '4px' }}
               />
               <figcaption>An example of a finished 3-tier fall-themed wedding cake decorated with autumn flowers.</figcaption>
             </figure>
             <p>This guide will walk you through creating a beautiful three-tier <strong>autumn-themed wedding cake</strong> that serves approximately <strong>100 guests</strong>. We&apos;ll cover everything from gathering supplies and baking each tier, to stacking, decorating, and transporting the cake. By following these step-by-step instructions, even a home baker can assemble an elegant wedding cake with confidence.</p>
-            <p>Our cake will have tiers of <em>6 inches, 8 inches, and 10 inches</em> in diameter. Each tier consists of two layers (baked separately and later stacked). In total, this size cake typically provides about 100 servings. The design will feature warm autumn colors (think <span style={{color: '#C65D21', fontWeight: 'bold'}}>burnt orange</span>, cream, and brown accents) and simple yet elegant decorations to match a fall wedding theme.</p>
+            <p>Our cake will have tiers of <em>6 inches, 8 inches, and 10 inches</em> in diameter. Each tier consists of two layers (baked separately and later stacked). In total, this size cake typically provides about 100 servings. The design will feature warm autumn colors (think <span style={{ color: '#C65D21', fontWeight: 'bold' }}>burnt orange</span>, cream, and brown accents) and simple yet elegant decorations to match a fall wedding theme.</p>
             <p><em>Note:</em> Feel free to adapt the cake flavors or colors to your preference – the instructions here focus on technique and structure, which will apply to any flavor of cake or buttercream.</p>
           </section>
 

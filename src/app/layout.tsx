@@ -21,6 +21,10 @@ export function generateViewport(): Viewport {
   };
 }
 
+import Header from "@/components/Header";
+
+// ... (imports)
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,6 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
+        <Header />
         {children}
       </body>
     </html>
