@@ -4,6 +4,7 @@ import { useState } from "react";
 import { uploadImage, validateImageFile } from "@/lib/storage";
 import { storage } from "@/lib/firebase";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function TestUploadPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -166,18 +167,18 @@ export default function TestUploadPage() {
 
         {/* Links */}
         <div className="mt-6 text-center">
-          <a
+          <Link
             href="/recipes/new"
             className="text-blue-600 hover:underline mr-4"
           >
             Go to New Recipe Page
-          </a>
-          <a
+          </Link>
+          <Link
             href="/"
             className="text-blue-600 hover:underline"
           >
             Go to Home
-          </a>
+          </Link>
         </div>
       </div>
     </div>
